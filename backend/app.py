@@ -7,13 +7,14 @@ from pydantic import BaseModel, Field
 from functools import reduce
 import re
 import csv
+from flask_cors import CORS
 import io
 from dotenv import load_dotenv
 import os
 
 # Initialize Flask application
 app = Flask(__name__)
-
+CORS(app)
 # Load environment variables
 load_dotenv()
 os.environ['GOOGLE_API_KEY'] = os.getenv("GOOGLE_API_KEY")
