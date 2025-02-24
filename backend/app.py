@@ -53,8 +53,10 @@ def json_to_pydantic_model(json_data: Union[List, Dict], class_name: str = "Sing
         "from pydantic import BaseModel, Field",
         "from typing import List, Optional, Dict, Any, Union\n",
         f"class {class_name}(BaseModel):"
+       # "   orginal_data: str = Field(default=None, description=\"Original data from the user\")"
     ]
     
+    class_definition.append(f"    original: str = Field(default=None, description=\"original_data\")")
     for field_name, field_type, description in fields:
         # Sanitize field name to be a valid Python identifier
         field_name = re.sub(r'\W|^(?=\d)', '_', field_name)

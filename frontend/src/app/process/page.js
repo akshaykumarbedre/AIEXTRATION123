@@ -1,4 +1,3 @@
-// app/page.js
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -7,11 +6,43 @@ import { Toaster, toast } from 'react-hot-toast'
 // API Base URL - change this to match your Flask backend
 const API_BASE_URL = 'http://localhost:5000'
 
+// Predefined schemas
+const predefinedSchemas = {
+  productReview: {
+    className: 'ProductReviewAnalysis',
+    fields: [
+      { name: 'sentiment', type: 'str', description: "Classify this review's overall tone as 'strength', 'area for improvement', or 'no strong opinion' and append a key phrase in quotes. Return as a single string." },
+      { name: 'productFeatures', type: 'str', description: "Summarize product features in this review as a single string, listing each feature with its feedback (strength/area for improvement/mentioned) separated by commas. Use 'none' if none found." },
+      { name: 'painPoints', type: 'str', description: "List specific issues in this review as a single string, joining multiple issues with commas, or return 'none' if none found." },
+      { name: 'demographics', type: 'str', description: "Summarize any demographic details from this review as a single string (e.g., 'parent', 'teen'), or return 'none' if unclear." },
+      { name: 'purchaseIntent', type: 'str', description: "Assess this review's purchase intent as 'likely to repurchase', 'unlikely to repurchase', or 'uncertain' and append a key phrase in quotes. Return as a single string." },
+      { name: 'competitorComparison', type: 'str', description: "Summarize competitor mentions in this review as a single string with brand and feedback (advantage/disadvantage), or return 'none' if none." },
+      { name: 'trendAnalysis', type: 'str', description: "Since this is a single review, return 'N/A' as a string for trend analysis." },
+      { name: 'authenticity', type: 'str', description: "Assess if this review is 'reliable' or 'unreliable' and append reasoning in quotes. Return as a single string." },
+      { name: 'customerLoyalty', type: 'str', description: "Check this review for loyalty as 'loyal' or 'not loyal' and append evidence in quotes. Return as a single string." },
+      { name: 'productRecommendations', type: 'str', description: "Summarize any recommended products from this review as a single string, or return 'none' if none mentioned." },
+      { name: 'pricingFeedback', type: 'str', description: "Extract pricing feedback from this review as 'value praised', 'price concern', or 'no feedback' and append a key phrase in quotes. Return as a single string." },
+      { name: 'shippingExperience', type: 'str', description: "Assess shipping feedback in this review as 'strength', 'area for improvement', or 'no feedback' and append a key phrase in quotes. Return as a single string." },
+      { name: 'customerService', type: 'str', description: "Extract customer service feedback from this review as 'strength', 'area for improvement', or 'no feedback' and append a key phrase in quotes. Return as a single string." },
+      { name: 'usageContext', type: 'str', description: "Summarize how the product is used in this review as a single string, or return 'none' if unclear." },
+      { name: 'suggestedFeatures', type: 'str', description: "List any suggested features from this review as a single string, or return 'none' if none mentioned." }
+    ]
+  },
+  anotherSchema: {
+    className: 'AnotherSchema',
+    fields: [
+      { name: 'exampleField', type: 'str', description: 'Example description' }
+    ]
+  },
+  // Add more schemas as needed
+};
+
 export default function Home() {
   // State management
   const [activeTab, setActiveTab] = useState('schema')
   const [isLoading, setIsLoading] = useState(false)
   const [apiStatus, setApiStatus] = useState('unknown')
+  const [selectedSchema, setSelectedSchema] = useState('productReview')
 
   // Schema creation state
   const [className, setClassName] = useState('DataEntry')
@@ -25,6 +56,14 @@ export default function Home() {
   const [chunkSize, setChunkSize] = useState(1000)
   const [chunkOverlap, setChunkOverlap] = useState(100)
   const [processedResults, setProcessedResults] = useState([])
+
+  // Load predefined schema function
+  const loadPredefinedSchema = () => {
+    const schema = predefinedSchemas[selectedSchema];
+    setClassName(schema.className);
+    setFields(schema.fields);
+    toast.success(`${schema.className} schema loaded`);
+  };
 
   // Check API health on component mount
   useEffect(() => {
@@ -357,9 +396,43 @@ export default function Home() {
           {/* Schema Creation Tab */}
           {activeTab === 'schema' && (
             <div>
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">
-                Define Schema
-              </h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Define Schema
+                </h2>
+                <div className="flex items-center space-x-4">
+                  <select
+                    value={selectedSchema}
+                    onChange={(e) => setSelectedSchema(e.target.value)}
+                    className="p-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="productReview">Product Review Analysis</option>
+                    <option value="anotherSchema">Another Schema</option>
+                    {/* Add more options as needed */}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={loadPredefinedSchema}
+                    className="flex items-center px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-all shadow-md"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                      />
+                    </svg>
+                    Load Schema
+                  </button>
+                </div>
+              </div>
               <form onSubmit={handleCreateSchema}>
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -544,7 +617,7 @@ export default function Home() {
               )}
             </div>
           )}
-
+          
           {/* Text Processing Tab */}
           {activeTab === 'process' && (
             <div>
