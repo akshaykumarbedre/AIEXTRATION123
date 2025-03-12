@@ -8,5 +8,9 @@ A starting point for AI projects.
 1.  Clone the repository.
 2.  Add your code and data.
 3.  Modify the README.md.
-4.  run frontend and backend
+4.  run frontend and
+    .
+    .
+    .
+    .
 ```
